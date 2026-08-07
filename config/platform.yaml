@@ -219,12 +219,14 @@ retry_circuit_breaker:
     failure_threshold: 5
     recovery_timeout_seconds: 60.0
     half_open_max_requests: 1
-  endpoint:
-    type: ngrok
-    auth_token: "${NGROK_AUTH_TOKEN}"
-    endpoint: "${NGROK_ENDPOINT}"
-    health_check_interval_seconds: 30
-    timeout_seconds: 120
+endpoint:
+  type: frp
+  server_addr: vortx-api.duckdns.org
+  server_port: 27000
+  auth_token: "#2PIAUengaly"
+  api_url: https://vortx-api.duckdns.org:38443
+  health_check_interval_seconds: 30
+  timeout_seconds: 120
   handoff:
     warning_minutes: 30
     save_interval_minutes: 15

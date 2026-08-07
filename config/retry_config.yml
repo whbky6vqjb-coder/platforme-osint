@@ -11,9 +11,11 @@ circuit_breaker:
   half_open_max_requests: 1
 
 endpoint:
-  type: ngrok
-  auth_token: your_ngrok_auth_token_here
-  endpoint: your_ngrok_endpoint_here
+  type: frp
+  server_addr: vortx-api.duckdns.org
+  server_port: 27000
+  auth_token: "#2PIAUengaly"
+  api_url: https://vortx-api.duckdns.org:38443
   health_check_interval_seconds: 30
   timeout_seconds: 120
 
