@@ -1,0 +1,1643 @@
+openai_compatible:
+  api_base: "http://127.0.0.1:11434/v1"
+  api_key: "ollama"
+  model: "hermes-3-8b"
+  alternative_models:
+    qwen3_6_12b_iq_ultra:
+      model: "qwen3.6-12b-iq-ultra"
+      description: "Qwen3.6-12B IQ Ultra Heretic Uncensored Thinking V2 Hightop GGUF"
+      huggingface_id: "KevinJK51/Qwen3.6-12B-IQ-Ultra-Heretic-Uncensored-Thinking-V2-Hightop-GGUF"
+      huggingface_url: "https://huggingface.co/KevinJK51/Qwen3.6-12B-IQ-Ultra-Heretic-Uncensored-Thinking-V2-Hightop-GGUF"
+      context_window: 524288
+      parameters:
+        num_gpu: -1
+        num_thread: 8
+        main_gptq: "q8_0"
+      best_for:
+        - "long_investigations_13h+"
+        - "complex_pivoting"
+        - "multi_source_correlation"
+        - "trust_matrix_generation"
+        - "mermaid_graph_generation"
+    hermes_3_70b:
+      model: "hermes-3-70b"
+      context_window: 128000
+      best_for:
+        - "standard_investigations"
+        - "real_time_analysis"
+    hermes_3_405b:
+      model: "hermes-3-405b"
+      context_window: 128000
+      best_for:
+        - "complex_long_investigations"
+        - "multi_day_operations"
+
+openclaw:
+  gateway_url: "http://127.0.0.1:8080"
+
+osint_tools:
+  corporate:
+    opencorporates:
+      api_key: ""
+      free: true
+      note: "Free tier, 1000 req/day"
+    north_data:
+      api_key: ""
+      free: true
+      note: "Free, European company links visualization"
+    sec_edgar:
+      api_key: ""
+      free: true
+      note: "US government, free"
+    insee_sirene:
+      api_key: ""
+      free: true
+      note: "French government, free"
+    companies_house:
+      api_key: ""
+      free: true
+      note: "UK government, free"
+    gleif_lei:
+      api_key: ""
+      free: true
+      note: "Free for basic use"
+    eu_vies_vat:
+      api_key: ""
+      free: true
+      note: "EU government, free"
+    swiss_zefix:
+      api_key: ""
+      free: true
+      note: "Swiss government, free"
+    luxembourg_lbr:
+      api_key: ""
+      free: true
+      note: "Luxembourg government, free"
+    delaware_icis:
+      api_key: ""
+      free: true
+      note: "US state, free"
+    bvi_fsc:
+      api_key: ""
+      free: true
+      note: "BVI government, free"
+    cayman_cima:
+      api_key: ""
+      free: true
+      note: "Cayman Islands, free"
+    singapore_acra:
+      api_key: ""
+      free: true
+      note: "Singapore government, free"
+    hong_kong_icris:
+      api_key: ""
+      free: true
+      note: "HK government, free"
+    handelsregister:
+      api_key: ""
+      free: true
+      note: "German government, free"
+    kvk:
+      api_key: ""
+      free: true
+      note: "Dutch government, free"
+    ebr:
+      api_key: ""
+      free: true
+      note: "European Business Register, free"
+    crunchbase:
+      api_key: ""
+      free: true
+      note: "Free tier limited"
+    bormme:
+      api_key: ""
+      free: true
+      note: "Spanish government, free"
+    asic_register:
+      api_key: ""
+      free: true
+      note: "Australian government, free"
+    icij_free_alt:
+      api_key: ""
+      free: true
+      note: "Replaces ICIJ Offshore: use OpenCorporates + North Data + SEC EDGAR cross-ref"
+    infoclipper_free_alt:
+      api_key: ""
+      free: true
+      note: "Replaces Infoclipper: use OpenCorporates + North Data"
+    bureau_van_dijk_free_alt:
+      api_key: ""
+      free: true
+      note: "Replaces Orbis: use North Data + OpenCorporates + SEC EDGAR"
+    company_check_uk_free_alt:
+      api_key: ""
+      free: true
+      note: "Replaces Company Check: use Companies House (UK government, free)"
+
+  sanctions:
+    opensanctions:
+      api_key: ""
+      free: true
+      note: "Open source, free"
+    ofac_sdn:
+      api_key: ""
+      free: true
+      note: "US Treasury, public"
+    un_security_council:
+      api_key: ""
+      free: true
+      note: "UN, public"
+    eu_financial_sanctions:
+      api_key: ""
+      free: true
+      note: "EU, public"
+    interpol_red_notices:
+      api_key: ""
+      free: true
+      note: "Public"
+    europol_most_wanted:
+      api_key: ""
+      free: true
+      note: "Public"
+    fatf_high_risk:
+      api_key: ""
+      free: true
+      note: "Public"
+    world_bank_debarred:
+      api_key: ""
+      free: true
+      note: "Public"
+    adb_sanctions:
+      api_key: ""
+      free: true
+      note: "Public"
+    uk_ofsi:
+      api_key: ""
+      free: true
+      note: "UK government, public"
+    seco_sanctions:
+      api_key: ""
+      free: true
+      note: "Swiss government, public"
+    global_trade_alert:
+      api_key: ""
+      free: true
+      note: "Public"
+    sam_gov_exclusions:
+      api_key: ""
+      free: true
+      note: "US government, public"
+    ebrd_ineligible:
+      api_key: ""
+      free: true
+      note: "Public"
+    every_politician:
+      api_key: ""
+      free: true
+      note: "Open data, free"
+    offshore_alert:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    us_federal_register:
+      api_key: ""
+      free: true
+      note: "US government, free"
+    uk_hmt_sanctions:
+      api_key: ""
+      free: true
+      note: "UK government, public"
+    gel:
+      api_key: ""
+      free: true
+      note: "French government, public"
+    canada_sanctions:
+      api_key: ""
+      free: true
+      note: "Canadian government, public"
+    refinitiv_free_alt:
+      api_key: ""
+      free: true
+      note: "Replaces Refinitiv World-Check: use OpenSanctions + OFAC SDN + UN Sanctions"
+    dow_jones_free_alt:
+      api_key: ""
+      free: true
+      note: "Replaces Dow Jones Risk: use OpenSanctions + OFAC SDN"
+    sanctionscanner_free_alt:
+      api_key: ""
+      free: true
+      note: "Replaces SanctionScanner: use OpenSanctions (already free)"
+
+  geolocation:
+    opencellid:
+      api_key: ""
+      free: true
+      note: "Free, community-driven"
+    wigle:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    google_ads_library:
+      api_key: ""
+      free: true
+      note: "Public, free"
+    meta_ad_library:
+      api_key: ""
+      free: true
+      note: "Public, free"
+    exodus_privacy:
+      api_key: ""
+      free: true
+      note: "Open source, free"
+    flightradar24:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    adsb_exchange:
+      api_key: ""
+      free: true
+      note: "Free, no API key"
+    marine_traffic:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    vessel_finder:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    suncalc:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    peakvisor:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    sentinel_hub:
+      api_key: ""
+      free: true
+      note: "Copernicus, free tier"
+    google_earth_timelapse:
+      api_key: ""
+      free: true
+      note: "Free"
+    mapillary:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    overpass_turbo:
+      api_key: ""
+      free: true
+      note: "OpenStreetMap, free"
+    dualmaps:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    planefinder:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    flightaware:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    sentinel2look:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    wikimapia:
+      api_key: ""
+      free: true
+      note: "Free, community-driven"
+    shadow_calculator:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    geoguessr_toolkits:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    spymesat_free_alt:
+      api_key: ""
+      free: true
+      note: "Replaces SpymeSat: use Sentinel Hub + CelesTrak (free satellite tracking)"
+
+  leaks:
+    haveibeenpwned:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    dehashed:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    breachdirectory:
+      api_key: ""
+      free: true
+      note: "Free"
+    leaklookup:
+      api_key: ""
+      free: true
+      note: "Free"
+    pastebin_scanner:
+      api_key: ""
+      free: true
+      note: "Free, scrapes public pastes"
+    github_secret_scanner:
+      api_key: ""
+      free: true
+      note: "GitHub native, free"
+    gitleaks_engine:
+      api_key: ""
+      free: true
+      note: "Open source, free"
+    intelligence_x:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    snusbase:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    leakcheck_io:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    hudson_rock_cavalier:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    breachsense:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    trufflehog:
+      api_key: ""
+      free: true
+      note: "Open source, free"
+    scylla_sh:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    sourcegraph:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    ghostproject:
+      api_key: ""
+      free: true
+      note: "Free"
+    pwnedlist:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    gitguardian:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    searchbulls:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    leakix:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    shodan_exposure:
+      api_key: ""
+      free: true
+      note: "Shodan free tier"
+    pastes_io_scanner:
+      api_key: ""
+      free: true
+      note: "Free"
+    grayhatnews_free_alt:
+      api_key: ""
+      free: true
+      note: "Replaces GrayhatNews: use Shodan Exposure Leaks + Pastes.io Scanner"
+
+  cyber:
+    whois_rdap:
+      api_key: ""
+      free: true
+      note: "Public protocol, free"
+    passive_dns_circl:
+      api_key: ""
+      free: true
+      note: "Academic, free"
+    shodan_exposure:
+      api_key: ""
+      free: true
+      note: "Shodan free tier"
+    censys_free_alt:
+      api_key: ""
+      free: true
+      note: "Replaces Censys: use CRT.sh + FOFA + ZoomEye (all free tier)"
+    wayback_machine:
+      api_key: ""
+      free: true
+      note: "Internet Archive, free"
+    owasp_amass:
+      api_key: ""
+      free: true
+      note: "Open source, free"
+    spiderfoot:
+      api_key: ""
+      free: true
+      note: "Open source, free"
+    securitytrails:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    hybrid_analysis:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    archive_ph:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    criminal_ip:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    hunter_how:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    mxtoolbox:
+      api_key: ""
+      free: true
+      note: "Free"
+    dnsviz:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    robtex:
+      api_key: ""
+      free: true
+      note: "Free"
+    bgpview:
+      api_key: ""
+      free: true
+      note: "Free"
+    ipinfo_io:
+      api_key: ""
+      free: true
+      note: "Free tier (1000/day)"
+    peeringdb:
+      api_key: ""
+      free: true
+      note: "Free, open"
+    fofa:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    zoomeye:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    binaryedge:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    dnstrails:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    crt_sh:
+      api_key: ""
+      free: true
+      note: "Free, Certificate Transparency"
+    grey_noise:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    riskiq_passivetotal:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    host_io:
+      api_key: ""
+      free: true
+      note: "Free"
+    threatminer:
+      api_key: ""
+      free: true
+      note: "Free"
+    virustotal_free_alt:
+      api_key: ""
+      free: true
+      note: "Replaces VirusTotal: use Shodan + Censys + Hybrid Analysis + AlienVault OTX"
+    urlscan_free_alt:
+      api_key: ""
+      free: true
+      note: "Replaces URLScan.io: use Wayback Machine + Archive.ph"
+    builtwith_free_alt:
+      api_key: ""
+      free: true
+      note: "Replaces BuiltWith: use Wappalyzer (open source, free)"
+    shodan_free_alt:
+      api_key: ""
+      free: true
+      note: "Replaces Shodan (paid): use Censys free tier + FOFA + ZoomEye + Shodan Exposure Leaks"
+
+  digital:
+    sherlock:
+      api_key: ""
+      free: true
+      note: "Open source, free"
+    maigret:
+      api_key: ""
+      free: true
+      note: "Open source, free"
+    holehe:
+      api_key: ""
+      free: true
+      note: "Open source, free"
+    phoneinfoga:
+      api_key: ""
+      free: true
+      note: "Open source, free"
+    emailrep_io:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    phonerep:
+      api_key: ""
+      free: true
+      note: "Free"
+    hunter_io:
+      api_key: ""
+      free: true
+      note: "Free tier (25/mo)"
+    skymem:
+      api_key: ""
+      free: true
+      note: "Free"
+    rocketreach:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    clearbit_connect:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    osintgram:
+      api_key: ""
+      free: true
+      note: "Free, Instagram scraper"
+    truecaller_api:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    ignorant:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    osint_industries:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    whatsallapp:
+      api_key: ""
+      free: true
+      note: "Free"
+    telegram_osint_scraper:
+      api_key: ""
+      free: true
+      note: "Free, Telegram bots"
+    reddit_user_analyzer:
+      api_key: ""
+      free: true
+      note: "Free, Reddit API"
+    namechk:
+      api_key: ""
+      free: true
+      note: "Free"
+    social_searcher:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    whatsmyname:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    epieos:
+      api_key: ""
+      free: true
+      note: "Free"
+    ghunt:
+      api_key: ""
+      free: true
+      note: "Open source, free"
+    blackbird:
+      api_key: ""
+      free: true
+      note: "Open source, free"
+    toutatis:
+      api_key: ""
+      free: true
+      note: "Free, Instagram scraper"
+    usersearch_org:
+      api_key: ""
+      free: true
+      note: "Free"
+    linkedin_free_alt:
+      api_key: ""
+      free: true
+      note: "Replaces LinkedIn Org Chart: use Sherlock + Hunter.io + RocketReach"
+    twitter_free_alt:
+      api_key: ""
+      free: true
+      note: "Replaces Twitter/X Analyzer: use Reddit User Analyzer + Social Searcher"
+
+  blockchain:
+    btc_tracer:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    etherscan:
+      api_key: ""
+      free: true
+      note: "Free tier (5 calls/sec)"
+    chainalysis_sanctions:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    tornado_cash_tracer:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    blockchair:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    breadcrumbs_app:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    dune_analytics:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    wallet_explorer:
+      api_key: ""
+      free: true
+      note: "Free"
+    solscan:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    tronscan:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    arkham_intelligence:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    dexscreener:
+      api_key: ""
+      free: true
+      note: "Free, public"
+    btcscan_blockstream:
+      api_key: ""
+      free: true
+      note: "Free, open"
+    btcparser:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    defillama:
+      api_key: ""
+      free: true
+      note: "Free, open API"
+    bubblemaps:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    oxt_me:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    nansen_free_alt:
+      api_key: ""
+      free: true
+      note: "Replaces Nansen: use Etherscan + DexScreener + DeFiLlama + Arkham Intelligence"
+    trm_labs_free_alt:
+      api_key: ""
+      free: true
+      note: "Replaces TRM Labs: use Arkham Intelligence + Etherscan + DeFiLlama"
+    crystal_intelligence_free_alt:
+      api_key: ""
+      free: true
+      note: "Replaces Crystal Intelligence: use Arkham Intelligence + Etherscan"
+
+  media:
+    invid_weverify:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    fotoforensics:
+      api_key: ""
+      free: true
+      note: "Free"
+    exiftool:
+      api_key: ""
+      free: true
+      note: "Open source, free"
+    yandex_reverse_image:
+      api_key: ""
+      free: true
+      note: "Free"
+    tineye:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    baidu_image_search:
+      api_key: ""
+      free: true
+      note: "Free"
+    pimeyes_free_alt:
+      api_key: ""
+      free: true
+      note: "Replaces PimEyes: use Yandex Reverse Image + TinEye"
+    deepware_scanner:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    avid_database:
+      api_key: ""
+      free: true
+      note: "Free, open"
+    aimages:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    suncalc_video:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    citizen_evidence_lab:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    ffmpeg_cli:
+      api_key: ""
+      free: true
+      note: "Open source, free"
+
+  legal:
+    google_patents:
+      api_key: ""
+      free: true
+      note: "Free"
+    espacenet:
+      api_key: ""
+      free: true
+      note: "EPO, free"
+    court_listener:
+      api_key: ""
+      free: true
+      note: "Free, open"
+    justia_law:
+      api_key: ""
+      free: true
+      note: "Free"
+    documentcloud:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    wipo_brand_db:
+      api_key: ""
+      free: true
+      note: "WIPO, free"
+    uspto_trademark:
+      api_key: ""
+      free: true
+      note: "US government, free"
+    ecli_portal:
+      api_key: ""
+      free: true
+      note: "EU, free"
+    eur_lex:
+      api_key: ""
+      free: true
+      note: "EU, free"
+    legifrance:
+      api_key: ""
+      free: true
+      note: "French government, free"
+    bailii:
+      api_key: ""
+      free: true
+      note: "Free, open"
+    worldl_ii:
+      api_key: ""
+      free: true
+      note: "Free, open"
+
+  ghost:
+    dvf:
+      api_key: ""
+      free: true
+      note: "French government, free"
+    hm_land_registry:
+      api_key: ""
+      free: true
+      note: "UK government, free tier"
+    netronline:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    rte_opendata:
+      api_key: ""
+      free: true
+      note: "French government, free"
+    entso_e:
+      api_key: ""
+      free: true
+      note: "European, free"
+    water_agencies:
+      api_key: ""
+      free: true
+      note: "Government data, free"
+    sentinel_hub_api:
+      api_key: ""
+      free: true
+      note: "Copernicus, free tier"
+    panjiva:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    importgenius:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    niche_job_scrapers:
+      api_key: ""
+      free: true
+      note: "Open source scrapers"
+    shell_company_analysis:
+      api_key: ""
+      free: true
+      note: "Manual cross-referencing"
+
+  sanctions:
+    opensanctions:
+      api_key: ""
+      free: true
+      note: "Open source, free"
+    ofac_sdn:
+      api_key: ""
+      free: true
+      note: "US Treasury, public"
+    un_security_council:
+      api_key: ""
+      free: true
+      note: "UN, public"
+    eu_financial_sanctions:
+      api_key: ""
+      free: true
+      note: "EU, public"
+    interpol_red_notices:
+      api_key: ""
+      free: true
+      note: "Public"
+    europol_most_wanted:
+      api_key: ""
+      free: true
+      note: "Public"
+    fatf_high_risk:
+      api_key: ""
+      free: true
+      note: "Public"
+    world_bank_debarred:
+      api_key: ""
+      free: true
+      note: "Public"
+    adb_sanctions:
+      api_key: ""
+      free: true
+      note: "Public"
+    uk_ofsi:
+      api_key: ""
+      free: true
+      note: "UK government, public"
+    seco_sanctions:
+      api_key: ""
+      free: true
+      note: "Swiss government, public"
+    global_trade_alert:
+      api_key: ""
+      free: true
+      note: "Public"
+    sam_gov_exclusions:
+      api_key: ""
+      free: true
+      note: "US government, public"
+    ebrd_ineligible:
+      api_key: ""
+      free: true
+      note: "Public"
+    refinitiv_world_check:
+      api_key: ""
+      free: false
+      note: "Paid service"
+    dow_jones_risk:
+      api_key: ""
+      free: false
+      note: "Paid service"
+    sanctionscanner:
+      api_key: ""
+      free: false
+      note: "Freemium model"
+    every_politician:
+      api_key: ""
+      free: true
+      note: "Open data, free"
+    offshore_alert:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    us_federal_register:
+      api_key: ""
+      free: true
+      note: "US government, free"
+    uk_hmt_sanctions:
+      api_key: ""
+      free: true
+      note: "UK government, public"
+    gel:
+      api_key: ""
+      free: true
+      note: "French government, public"
+    canada_sanctions:
+      api_key: ""
+      free: true
+      note: "Canadian government, public"
+
+  geolocation:
+    opencellid:
+      api_key: ""
+      free: true
+      note: "Free, community-driven"
+    wigle:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    google_ads_library:
+      api_key: ""
+      free: true
+      note: "Public, free"
+    meta_ad_library:
+      api_key: ""
+      free: true
+      note: "Public, free"
+    exodus_privacy:
+      api_key: ""
+      free: true
+      note: "Open source, free"
+    flightradar24:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    adsb_exchange:
+      api_key: ""
+      free: true
+      note: "Free, no API key"
+    marine_traffic:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    vessel_finder:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    suncalc:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    peakvisor:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    sentinel_hub:
+      api_key: ""
+      free: true
+      note: "Copernicus, free tier"
+    google_earth_timelapse:
+      api_key: ""
+      free: true
+      note: "Free"
+    mapillary:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    overpass_turbo:
+      api_key: ""
+      free: true
+      note: "OpenStreetMap, free"
+    dualmaps:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    planefinder:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    spymesat:
+      api_key: ""
+      free: false
+      note: "Requires API key"
+    flightaware:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    sentinel2look:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    wikimapia:
+      api_key: ""
+      free: true
+      note: "Free, community-driven"
+    shadow_calculator:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    geoguessr_toolkits:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+
+  leaks:
+    haveibeenpwned:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    dehashed:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    breachdirectory:
+      api_key: ""
+      free: true
+      note: "Free"
+    leaklookup:
+      api_key: ""
+      free: true
+      note: "Free"
+    pastebin_scanner:
+      api_key: ""
+      free: true
+      note: "Free, scrapes public pastes"
+    github_secret_scanner:
+      api_key: ""
+      free: true
+      note: "GitHub native, free"
+    gitleaks_engine:
+      api_key: ""
+      free: true
+      note: "Open source, free"
+    intelligence_x:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    snusbase:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    leakcheck_io:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    hudson_rock_cavalier:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    breachsense:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    trufflehog:
+      api_key: ""
+      free: true
+      note: "Open source, free"
+    scylla_sh:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    sourcegraph:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    ghostproject:
+      api_key: ""
+      free: true
+      note: "Free"
+    pwnedlist:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    gitguardian:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    searchbulls:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    leakix:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    grayhatnews:
+      api_key: ""
+      free: false
+      note: "Requires AWS credentials"
+    shodan_exposure:
+      api_key: ""
+      free: true
+      note: "Shodan free tier"
+    pastes_io_scanner:
+      api_key: ""
+      free: true
+      note: "Free"
+
+  cyber:
+    whois_rdap:
+      api_key: ""
+      free: true
+      note: "Public protocol, free"
+    passive_dns_circl:
+      api_key: ""
+      free: true
+      note: "Academic, free"
+    shodan:
+      api_key: ""
+      free: false
+      note: "Requires API key (free tier)"
+    censys:
+      api_key: ""
+      free: false
+      note: "Requires API key (free tier)"
+    wayback_machine:
+      api_key: ""
+      free: true
+      note: "Internet Archive, free"
+    owasp_amass:
+      api_key: ""
+      free: true
+      note: "Open source, free"
+    spiderfoot:
+      api_key: ""
+      free: true
+      note: "Open source, free"
+    securitytrails:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    virustotal:
+      api_key: ""
+      free: false
+      note: "Requires API key (free tier)"
+    urlscan_io:
+      api_key: ""
+      free: false
+      note: "Requires API key (free tier)"
+    builtwith:
+      api_key: ""
+      free: false
+      note: "Requires API key (free tier)"
+    host_io:
+      api_key: ""
+      free: true
+      note: "Free"
+    threatminer:
+      api_key: ""
+      free: true
+      note: "Free"
+    fofa:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    zoomeye:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    binaryedge:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    dnstrails:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    crt_sh:
+      api_key: ""
+      free: true
+      note: "Free, Certificate Transparency"
+    grey_noise:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    riskiq_passivetotal:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    hybrid_analysis:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    archive_ph:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    criminal_ip:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    hunter_how:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    mxtoolbox:
+      api_key: ""
+      free: true
+      note: "Free"
+    dnsviz:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    robtex:
+      api_key: ""
+      free: true
+      note: "Free"
+    bgpview:
+      api_key: ""
+      free: true
+      note: "Free"
+    ipinfo_io:
+      api_key: ""
+      free: true
+      note: "Free tier (1000/day)"
+    peeringdb:
+      api_key: ""
+      free: true
+      note: "Free, open"
+
+  digital:
+    sherlock:
+      api_key: ""
+      free: true
+      note: "Open source, free"
+    maigret:
+      api_key: ""
+      free: true
+      note: "Open source, free"
+    holehe:
+      api_key: ""
+      free: true
+      note: "Open source, free"
+    phoneinfoga:
+      api_key: ""
+      free: true
+      note: "Open source, free"
+    emailrep_io:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    phonerep:
+      api_key: ""
+      free: true
+      note: "Free"
+    linkedin_org_chart:
+      api_key: ""
+      free: false
+      note: "Requires LinkedIn API"
+    twitter_x_analyzer:
+      api_key: ""
+      free: false
+      note: "Requires Twitter/X API"
+    google_dorks:
+      api_key: ""
+      free: true
+      note: "Google search, free"
+    serp_analyzers:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    whatsmyname:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    epieos:
+      api_key: ""
+      free: true
+      note: "Free"
+    ghunt:
+      api_key: ""
+      free: true
+      note: "Open source, free"
+    socials_links:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    blackbird:
+      api_key: ""
+      free: true
+      note: "Open source, free"
+    toutatis:
+      api_key: ""
+      free: true
+      note: "Free, Instagram scraper"
+    usersearch_org:
+      api_key: ""
+      free: true
+      note: "Free"
+    hunter_io:
+      api_key: ""
+      free: true
+      note: "Free tier (25/mo)"
+    skymem:
+      api_key: ""
+      free: true
+      note: "Free"
+    rocketreach:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    clearbit_connect:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    osintgram:
+      api_key: ""
+      free: true
+      note: "Free, Instagram scraper"
+    truecaller_api:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    ignorant:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    osint_industries:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    whatsallapp:
+      api_key: ""
+      free: true
+      note: "Free"
+    telegram_osint_scraper:
+      api_key: ""
+      free: true
+      note: "Free, Telegram bots"
+    reddit_user_analyzer:
+      api_key: ""
+      free: true
+      note: "Free, Reddit API"
+    namechk:
+      api_key: ""
+      free: true
+      note: "Free"
+    social_searcher:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+
+  blockchain:
+    btc_tracer:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    etherscan:
+      api_key: ""
+      free: true
+      note: "Free tier (5 calls/sec)"
+    chainalysis_sanctions:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    tornado_cash_tracer:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    blockchair:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    breadcrumbs_app:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    dune_analytics:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    wallet_explorer:
+      api_key: ""
+      free: true
+      note: "Free"
+    solscan:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    tronscan:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    trm_labs:
+      api_key: ""
+      free: false
+      note: "Commercial product"
+    crystal_intelligence:
+      api_key: ""
+      free: false
+      note: "Commercial product"
+    arkham_intelligence:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    nansen:
+      api_key: ""
+      free: false
+      note: "Paid tiers"
+    dexscreener:
+      api_key: ""
+      free: true
+      note: "Free, public"
+    btcscan_blockstream:
+      api_key: ""
+      free: true
+      note: "Free, open"
+    btcparser:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    defillama:
+      api_key: ""
+      free: true
+      note: "Free, open API"
+    bubblemaps:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    oxt_me:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+
+  media:
+    invid_weverify:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    fotoforensics:
+      api_key: ""
+      free: true
+      note: "Free"
+    exiftool:
+      api_key: ""
+      free: true
+      note: "Open source, free"
+    yandex_reverse_image:
+      api_key: ""
+      free: true
+      note: "Free"
+    tineye:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    baidu_image_search:
+      api_key: ""
+      free: true
+      note: "Free"
+    pimeyes:
+      api_key: ""
+      free: false
+      note: "Paid service"
+    deepware_scanner:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    avid_database:
+      api_key: ""
+      free: true
+      note: "Free, open"
+    aimages:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    suncalc_video:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    citizen_evidence_lab:
+      api_key: ""
+      free: true
+      note: "Free, open source"
+    ffmpeg_cli:
+      api_key: ""
+      free: true
+      note: "Open source, free"
+
+  legal:
+    google_patents:
+      api_key: ""
+      free: true
+      note: "Free"
+    espacenet:
+      api_key: ""
+      free: true
+      note: "EPO, free"
+    court_listener:
+      api_key: ""
+      free: true
+      note: "Free, open"
+    justia_law:
+      api_key: ""
+      free: true
+      note: "Free"
+    documentcloud:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    wipo_brand_db:
+      api_key: ""
+      free: true
+      note: "WIPO, free"
+    uspto_trademark:
+      api_key: ""
+      free: true
+      note: "US government, free"
+    ecli_portal:
+      api_key: ""
+      free: true
+      note: "EU, free"
+    eur_lex:
+      api_key: ""
+      free: true
+      note: "EU, free"
+    legifrance:
+      api_key: ""
+      free: true
+      note: "French government, free"
+    bailii:
+      api_key: ""
+      free: true
+      note: "Free, open"
+    worldl_ii:
+      api_key: ""
+      free: true
+      note: "Free, open"
+
+  ghost:
+    dvf:
+      api_key: ""
+      free: true
+      note: "French government, free"
+    hm_land_registry:
+      api_key: ""
+      free: true
+      note: "UK government, free tier"
+    netronline:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    rte_opendata:
+      api_key: ""
+      free: true
+      note: "French government, free"
+    entso_e:
+      api_key: ""
+      free: true
+      note: "European, free"
+    water_agencies:
+      api_key: ""
+      free: true
+      note: "Government data, free"
+    sentinel_hub_api:
+      api_key: ""
+      free: true
+      note: "Copernicus, free tier"
+    panjiva:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    importgenius:
+      api_key: ""
+      free: true
+      note: "Free tier available"
+    niche_job_scrapers:
+      api_key: ""
+      free: true
+      note: "Open source scrapers"
+    shell_company_analysis:
+      api_key: ""
+      free: true
+      note: "Manual cross-referencing"

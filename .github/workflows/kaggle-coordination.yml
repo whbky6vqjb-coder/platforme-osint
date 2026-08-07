@@ -1,0 +1,279 @@
+name: Kaggle Session Coordination
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+env:
+  HF_DATASET: TwiZzy841/platforme-osint
+  STATE_FILE: state.json
+  MODEL_PATH: Qwen3.6-27B-Fable-Fus-711-UnHeretic-NM-DAU-NEO-MAX-NEO-MTP-Q4_K_M.gguf
+  SESSION_DURATION_HOURS: "11.5"
+  HANDOFF_WARNING_MINUTES: "30"
+  SAVE_INTERVAL_MINUTES: "15"
+  RETRY_MAX_ATTEMPTS: "3"
+  RETRY_BASE_DELAY: "1.0"
+  RETRY_MAX_DELAY: "30.0"
+  CIRCUIT_BREAKER_THRESHOLD: "5"
+  CIRCUIT_BREAKER_TIMEOUT: "60.0"
+  PINGGY_AUTH_TOKEN: ${{ secrets.PINGGY_AUTH_TOKEN }}
+  PINGGY_ENDPOINT: ${{ secrets.PINGGY_ENDPOINT }}
+
+jobs:
+  manage-kaggle-machine:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        machine: [kaggle_1, kaggle_2, kaggle_3, kaggle_4, kaggle_5, kaggle_6]
+      fail-fast: false
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install SOPS and Age
+        run: |
+          curl -sL https://github.com/getsops/sops/releases/download/v3.8.1/sops_3.8.1_amd64.deb -o /tmp/sops.deb
+          sudo dpkg -i /tmp/sops.deb || sudo apt-get install -f -y
+          curl -sL https://github.com/FiloSottile/age/releases/download/v1.1.1/age-v1.1.1-linux-amd64.tar.gz -o /tmp/age.tar.gz
+          tar xzf /tmp/age.tar.gz -C /usr/local/bin/ age age-keygen
+
+      - name: Decrypt secrets
+        run: |
+          echo "${{ secrets.AGE_PRIVATE_KEY }}" > /tmp/age_key.txt
+          sops --decrypt secrets.yaml > /tmp/secrets_decrypted.yaml
+          python3 -c "
+          import yaml, os
+          with open('/tmp/secrets_decrypted.yaml', 'r') as f:
+              secrets = yaml.safe_load(f)
+          with open('$GITHUB_ENV', 'a') as env:
+              for key, value in secrets.items():
+                  env.write(f'{key}={value}\n')
+          "
+
+- name: Install MCP servers and Pinggy
+        run: |
+          npm install -g github-mcp 2>&1 || echo "github-mcp install failed, using fallback"
+          npm install -g @iflow-mcp/dishant27-kaggle-mcp 2>&1 || echo "kaggle MCP install failed, using fallback"
+          pip install huggingface_hub httpx 2>&1 | tail -5
+          pinggy --version
+
+      - name: Set Kaggle credentials for this machine
+        id: credentials
+        run: |
+          machine_index="${{ matrix.machine }}"
+          machine_index="${machine_index//kaggle_/}"
+          echo "machine_index=${machine_index}" >> $GITHUB_OUTPUT
+          eval echo "username=\$KAGGLE_USERNAME_${machine_index}" >> $GITHUB_OUTPUT
+          echo "key_set=true" >> $GITHUB_OUTPUT
+
+      - name: Start Pinggy tunnel
+        run: |
+          echo "Starting Pinggy tunnel..."
+          pinggy start --token "${PINGGY_AUTH_TOKEN}" --localport 8080
+          pinggy status
+
+      - name: Read current state
+        id: read-state
+        run: |
+          python3 -c "
+          import json, sys, os
+          try:
+              from huggingface_hub import HfApi
+              hf_token = os.environ.get('HF_TOKEN', '')
+              api = HfApi(token=hf_token)
+              import huggingface_hub
+              path = huggingface_hub.hf_hub_download(
+                  repo_id=os.environ.get('HF_DATASET', 'platforme-osint/state'),
+                  filename='${{ matrix.machine }}_state.json',
+                  repo_type='dataset',
+                  token=hf_token,
+              )
+              with open(path, 'r') as f:
+                  state = json.load(f)
+              print(json.dumps(state))
+          except Exception as e:
+              print(f'ERROR: {e}', file=sys.stderr)
+              print('{}')
+          " > ${{ matrix.machine }}_state.json
+        continue-on-error: true
+
+      - name: Determine machine status
+        id: status-check
+        run: |
+          python3 -c "
+          import json, sys, time, os
+
+          try:
+              with open('${{ matrix.machine }}_state.json', 'r') as f:
+                  state = json.load(f)
+          except:
+              state = {}
+
+          status = state.get('status', 'idle')
+          machine_id = state.get('machine_id', '')
+          session_expires = state.get('session_expires', 0)
+          handoff_ready = state.get('handoff_ready', False)
+          next_leader = state.get('next_leader', '')
+          heartbeat = state.get('heartbeat', 0)
+
+          now = time.time()
+          time_since_heartbeat = now - heartbeat if heartbeat else 999999
+          duration_hours = float(os.environ.get('SESSION_DURATION_HOURS', '11.5'))
+
+          needs_new_leader = False
+          if status == 'running' and time_since_heartbeat > 3600 * duration_hours:
+              needs_new_leader = True
+          elif status == 'handoff' and handoff_ready and next_leader:
+              needs_new_leader = True
+          elif status == 'idle' and handoff_ready:
+              needs_new_leader = True
+
+          print(f'needs_new_leader={needs_new_leader}')
+          print(f'current_status={status}')
+          print(f'current_machine={machine_id}')
+          print(f'time_since_heartbeat={time_since_heartbeat:.0f}')
+          "
+        id: status-result
+
+      - name: Update state - assign new leader
+        if: steps.status-result.outputs.needs_new_leader == 'True'
+        run: |
+          python3 -c "
+          import json, sys, time, os
+
+          try:
+              with open('${{ matrix.machine }}_state.json', 'r') as f:
+                  state = json.load(f)
+          except:
+              state = {}
+
+          duration_hours = float(os.environ.get('SESSION_DURATION_HOURS', '11.5'))
+          max_attempts = int(os.environ.get('RETRY_MAX_ATTEMPTS', '3'))
+          base_delay = float(os.environ.get('RETRY_BASE_DELAY', '1.0'))
+          max_delay = float(os.environ.get('RETRY_MAX_DELAY', '30.0'))
+          cb_threshold = int(os.environ.get('CIRCUIT_BREAKER_THRESHOLD', '5'))
+          cb_timeout = float(os.environ.get('CIRCUIT_BREAKER_TIMEOUT', '60.0'))
+
+          state['status'] = 'running'
+          state['machine_id'] = '${{ matrix.machine }}'
+          state['session_start'] = time.time()
+          state['session_expires'] = state['session_start'] + duration_hours * 3600
+          state['handoff_ready'] = False
+          state['next_leader'] = ''
+          state['last_save'] = time.time()
+          state['heartbeat'] = time.time()
+          state['retry_config'] = {
+              'max_attempts': max_attempts,
+              'base_delay': base_delay,
+              'max_delay': max_delay,
+              'circuit_breaker_threshold': cb_threshold,
+              'circuit_breaker_timeout': cb_timeout
+          }
+
+          with open('${{ matrix.machine }}_state.json', 'w') as f:
+              json.dump(state, f, indent=2)
+
+          print('State updated for ${{ matrix.machine }}')
+          "
+
+      - name: Trigger Kaggle session
+        if: steps.status-result.outputs.needs_new_leader == 'True'
+        run: |
+          echo "Triggering Kaggle session for ${{ matrix.machine }}"
+          echo "Machine: ${{ matrix.machine }}"
+          echo "Status: ${{ steps.status-result.outputs.current_status }}"
+          echo "Session duration: ${{ env.SESSION_DURATION_HOURS }}h"
+          echo "Model: ${{ env.MODEL_PATH }}"
+
+      - name: Monitor Kaggle machine
+        run: |
+          python3 -c "
+          import json, time, os
+
+          try:
+              with open('${{ matrix.machine }}_state.json', 'r') as f:
+                  state = json.load(f)
+          except:
+              state = {}
+
+          heartbeat = state.get('heartbeat', 0)
+          now = time.time()
+          age_hours = (now - heartbeat) / 3600 if heartbeat else 999999
+          duration_hours = float(os.environ.get('SESSION_DURATION_HOURS', '11.5'))
+
+          status = state.get('status', 'unknown')
+          machine_id = state.get('machine_id', 'unknown')
+
+          print(f'Monitoring {machine_id}: status={status}, age={age_hours:.1f}h')
+
+          if age_hours > duration_hours:
+              print(f'WARNING: Session expired for {machine_id}')
+          elif age_hours > duration_hours * 0.8:
+              print(f'WARNING: Session approaching expiry for {machine_id}')
+          else:
+              print(f'OK: {machine_id} is healthy')
+          "
+
+      - name: Save state to HuggingFace
+        run: |
+          python3 -c "
+          import json, sys, os
+          try:
+              from huggingface_hub import HfApi
+              hf_token = os.environ.get('HF_TOKEN', '')
+              api = HfApi(token=hf_token)
+              api.upload_file(
+                  path_or_fileobj='${{ matrix.machine }}_state.json',
+                  path_in_repo='${{ matrix.machine }}_state.json',
+                  repo_id=os.environ.get('HF_DATASET', 'platforme-osint/state'),
+                  repo_type='dataset',
+                  token=hf_token,
+              )
+              print('State saved to HuggingFace Dataset')
+          except Exception as e:
+              print(f'Error saving state: {e}', file=sys.stderr)
+          "
+        continue-on-error: true
+
+      - name: Cleanup stale session
+        if: github.event_name == 'schedule'
+        run: |
+          python3 -c "
+          import json, time, os
+
+          try:
+              from huggingface_hub import HfApi
+              hf_token = os.environ.get('HF_TOKEN', '')
+              api = HfApi(token=hf_token)
+              import huggingface_hub
+              path = huggingface_hub.hf_hub_download(
+                  repo_id=os.environ.get('HF_DATASET', 'platforme-osint/state'),
+                  filename='${{ matrix.machine }}_state.json',
+                  repo_type='dataset',
+                  token=hf_token,
+              )
+              with open(path, 'r') as f:
+                  state = json.load(f)
+
+              heartbeat = state.get('heartbeat', 0)
+              age_hours = (time.time() - heartbeat) / 3600
+
+              if age_hours > 24:
+                  state['status'] = 'stale'
+                  state['machine_id'] = ''
+                  with open(path, 'w') as f:
+                      json.dump(state, f, indent=2)
+                  print(f'Cleaned up stale session for ${{ matrix.machine }} (age: {age_hours:.1f}h)')
+              else:
+                  print(f'Session for ${{ matrix.machine }} is fresh (age: {age_hours:.1f}h)')
+          except Exception as e:
+              print(f'Error during cleanup: {e}')
+          "
+        continue-on-error: true

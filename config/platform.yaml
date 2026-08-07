@@ -1,0 +1,237 @@
+platform:
+  name: "Platforme OSINT"
+  version: "1.0.0"
+  description: "Automated OSINT & Infrastructure Detection Platform"
+
+openclaw:
+  orchestrator:
+    enabled: true
+    max_steps: 10
+    max_concurrency: 5
+    gateway_url: "http://127.0.0.1:8080"
+
+hermes:
+  llm:
+    provider: "openai-compatible"
+    api_base: "http://127.0.0.1:11434/v1"
+    api_key: "ollama"
+    model: "hermes-3-8b"
+    temperature: 0.3
+    max_tokens: 4096
+    context_window: 128000
+    alternative_models:
+      - name: "qwen3.6-12b-iq-ultra"
+        description: "Qwen3.6-12B IQ Ultra Heretic Uncensored Thinking V2 Hightop GGUF"
+        api_base: "http://127.0.0.1:11434/v1"
+        context_window: 524288
+        parameters:
+          num_gpu: -1
+          num_thread: 8
+          main_gptq: "q8_0"
+        huggingface_id: "KevinJK51/Qwen3.6-12B-IQ-Ultra-Heretic-Uncensored-Thinking-V2-Hightop-GGUF"
+        huggingface_url: "https://huggingface.co/KevinJK51/Qwen3.6-12B-IQ-Ultra-Heretic-Uncensored-Thinking-V2-Hightop-GGUF"
+        best_for:
+          - "long_investigations_13h+"
+          - "complex_pivoting"
+          - "multi_source_correlation"
+          - "trust_matrix_generation"
+          - "mermaid_graph_generation"
+      - name: "hermes-3-70b"
+        description: "Hermes 3 70B - best reasoning for OSINT"
+        api_base: "http://127.0.0.1:11434/v1"
+        context_window: 128000
+        best_for:
+          - "standard_investigations"
+          - "real_time_analysis"
+          - "cross_referencing"
+      - name: "hermes-3-405b"
+        description: "Hermes 3 405B - flagship reasoning"
+        api_base: "http://127.0.0.1:11434/v1"
+        context_window: 128000
+        best_for:
+          - "complex_long_investigations"
+          - "multi_day_operations"
+          - "high_confidence_trust_scoring"
+  reasoning:
+    enable_scratchpad: true
+    enable_inner_monologue: true
+    enable_planning: true
+    enable_tool_calling: true
+    sliding_window:
+      enabled: true
+      max_context_tokens: 128000
+      summary_interval_steps: 10
+      summary_max_tokens: 2000
+      keep_recent_turns: 5
+    memory_compression:
+      enabled: true
+      strategy: "summarize_and_forget"
+      compression_ratio: 0.3
+      preserve_entities: true
+      preserve_trust_scores: true
+      preserve_pivot_paths: true
+
+hermes_webui:
+  host: "0.0.0.0"
+  port: 5000
+  debug: false
+
+storage:
+  database: "data/platform.db"
+  cache_dir: "data/cache"
+  reports_dir: "data/reports"
+
+tools:
+  categories:
+    - corporate
+    - sanctions
+    - geolocation
+    - leaks
+    - cyber
+    - digital
+    - blockchain
+    - media
+    - legal
+    - ghost
+  parallel_workers: 4
+  timeout_seconds: 30
+  retry_attempts: 3
+
+correlation:
+  enable_pivoting: true
+  max_depth: 4
+  trust_threshold: 0.5
+
+trust_matrix:
+  legal_weight: 0.4
+  technical_weight: 0.35
+  physical_weight: 0.25
+
+ghost_detection:
+  enable_foncier: true
+  enable_energie: true
+  enable_satellite: true
+  enable_douane: true
+  enable_emploi: true
+
+investigation_profiles:
+  short:
+    duration_hours: 12
+    context_window: 128000
+    recommended_model: "hermes-3-70b"
+    sliding_window_summary_interval: 10
+    compression_ratio: 0.3
+    case_types:
+      - "fraude_financiere_ciblee"
+      - "espionnage_corporatif_individuel"
+      - "cybercriminalite_initiale"
+      - "suivi_personne_entite"
+      - "incident_securite_ponctuel"
+    description: "Enquêtes moyennes - 128K contexte suffisant avec sliding window"
+  medium:
+    duration_hours: 24
+    context_window: 524288
+    recommended_model: "qwen3.6-12b-iq-ultra"
+    sliding_window_summary_interval: 5
+    compression_ratio: 0.3
+    case_types:
+      - "reseaux_criminels_organises"
+      - "fraude_grande_echelle"
+      - "enquete_terrorisme"
+      - "investigation_corporative_majeure"
+      - "fuite_donnees_entreprise"
+      - "corruption_pots_de_vin_transfrontaliers"
+    description: "Enquêtes complexes - 512K contexte nécessaire pour 24h d'investigation"
+  long:
+    duration_hours: 48
+    context_window: 524288
+    recommended_model: "qwen3.6-12b-iq-ultra"
+    sliding_window_summary_interval: 3
+    compression_ratio: 0.3
+    case_types:
+      - "reseaux_criminels_internationaux"
+      - "operations_sponsorisees_etat"
+      - "enquetes_multi_juridictionnelles"
+      - "violations_donnees_massives"
+      - "trafic_reseaux_criminels_structurés"
+      - "sanctions_pep_reseaux"
+    description: "Enquêtes majeures - 512K contexte obligatoire, compression agressive recommandée"
+  massive:
+    duration_hours: 9999
+    context_window: 524288
+    recommended_model: "qwen3.6-12b-iq-ultra"
+    sliding_window_summary_interval: 2
+    compression_ratio: 0.3
+    hierarchical_summarization: true
+    chunk_investigation: true
+    max_tokens_per_chunk: 100000
+    retrieval_enabled: true
+    failed_attempts_tracking: true
+    case_types:
+      - "enquete_ultra_longue"
+      - "reseau_criminel_international_majeur"
+      - "investigation_gouvernementale_massive"
+      - "trafic_organise_transcontinental"
+      - "conspiration_multi_pays"
+      - "enquete_forensique_complete"
+    description: "Enquêtes massives dépassant 500K tokens - chunking + hiérarchical summarization + RAG retrieval + failed attempts tracking"
+
+kaggle_coordination:
+  enabled: true
+  hf_dataset: "TwiZzy841/platforme-osint"
+  state_file: "state.json"
+  model_path: "Qwen3.6-27B-Fable-Fus-711-UnHeretic-NM-DAU-NEO-MAX-NEO-MTP-Q4_K_M.gguf"
+  huggingface_id: "DavidAU/Qwen3.6-27B-Fable-Fusion-711-Uncensored-Heretic-NM-DAU-NEO-MAX-MTP-GGUF"
+  huggingface_url: "https://huggingface.co/DavidAU/Qwen3.6-27B-Fable-Fusion-711-Uncensored-Heretic-NM-DAU-NEO-MAX-MTP-GGUF"
+  session_duration_hours: 11.5
+  handoff_warning_minutes: 30
+  save_interval_minutes: 15
+  heartbeat_interval_seconds: 60
+  machines:
+    - kaggle_1
+    - kaggle_2
+    - kaggle_3
+    - kaggle_4
+    - kaggle_5
+    - kaggle_6
+  rotation_strategy: "round_robin"
+  model_cache_path: "/kaggle/input/models/"
+  persistent_storage:
+    sliding_window: true
+    failed_attempts: true
+    trust_scores: true
+    report_draft: true
+    prompt_cache: true
+    token_estimator_cache: true
+  github_actions:
+    enabled: true
+    schedule: "*/5 * * * *"
+    workflow_file: ".github/workflows/kaggle-coordination.yml"
+
+retry_circuit_breaker:
+  retry:
+    max_attempts: 3
+    base_delay_seconds: 1.0
+    max_delay_seconds: 30.0
+    backoff_multiplier: 2.0
+    jitter: true
+  circuit_breaker:
+    failure_threshold: 5
+    recovery_timeout_seconds: 60.0
+    half_open_max_requests: 1
+  endpoint:
+    type: ngrok
+    auth_token: "${NGROK_AUTH_TOKEN}"
+    endpoint: "${NGROK_ENDPOINT}"
+    health_check_interval_seconds: 30
+    timeout_seconds: 120
+  handoff:
+    warning_minutes: 30
+    save_interval_minutes: 15
+    transition_timeout_seconds: 120
+    state_file: state.json
+  persistence:
+    hf_dataset: platforme-osint/state
+    save_on_shutdown: true
+    save_on_handoff: true
+    save_interval_minutes: 15

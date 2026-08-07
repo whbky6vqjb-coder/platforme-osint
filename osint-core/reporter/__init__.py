@@ -1,0 +1,1 @@
+from osint_core.reporter.generator import ReportGenerator

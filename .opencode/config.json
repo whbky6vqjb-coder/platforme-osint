@@ -1,0 +1,42 @@
+{
+  "mcp": {
+    "servers": {
+      "github": {
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-github"],
+        "env": {
+          "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+        }
+      },
+      "huggingface": {
+        "command": "npx",
+        "args": ["-y", "@huggingface/mcp-client"],
+        "env": {
+          "HF_TOKEN": "${HF_TOKEN}"
+        }
+      },
+      "kaggle": {
+        "command": "npx",
+        "args": ["-y", "@iflow-mcp/dishant27-kaggle-mcp"],
+        "env": {
+          "KAGGLE_USERNAME": "${KAGGLE_USERNAME}",
+          "KAGGLE_KEY": "${KAGGLE_KEY}"
+        }
+      }
+    }
+  },
+  "opencode": {
+    "version": "1.0.0",
+    "platform": "platforme-osint",
+    "model": "qwen3.6-27b-fable-fus-711",
+    "context_window": 1000000,
+    "turboquant": true,
+    "kaggle": {
+      "enabled": true,
+      "machines": ["kaggle_1", "kaggle_2", "kaggle_3", "kaggle_4", "kaggle_5", "kaggle_6"],
+      "session_duration_hours": 11.5,
+      "handoff_warning_minutes": 30,
+      "save_interval_minutes": 15
+    }
+  }
+}

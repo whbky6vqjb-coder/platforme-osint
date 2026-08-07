@@ -1,0 +1,2 @@
+from osint_core.correlator.pivoting import EntityCorrelator
+from osint_core.correlator.extractor import EntityExtractor

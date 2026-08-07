@@ -1,0 +1,3 @@
+creation_rules:
+  - path_suffix: _secrets.yaml
+    age: age1k0t229agm8drrdrtw75r7dc7j2q2942wdteka4gppad9nyn5hq7sxns99p

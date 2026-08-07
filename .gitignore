@@ -1,0 +1,5 @@
+secrets.yaml
+.env
+__pycache__/
+*.pyc
+data/persistence/
