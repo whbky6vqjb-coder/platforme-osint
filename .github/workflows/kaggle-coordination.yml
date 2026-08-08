@@ -1,0 +1,255 @@
+name: Kaggle Session Coordination
+
+on:
+  schedule:
+    - cron: "0 */5 * * *"
+  workflow_dispatch:
+
+env:
+  HF_DATASET: TwiZzy841/platforme-osint
+  STATE_FILE: state.json
+  MODEL_PATH: "Qwen3.6-27B-Fable-Fus-711-UnHeretic-NM-DAU-NEO-MAX-NEO-MTP-Q4_K_M.gguf"
+  SESSION_DURATION_HOURS: "4.5"
+  HANDOFF_WARNING_MINUTES: "10"
+  SAVE_INTERVAL_MINUTES: "15"
+  RETRY_MAX_ATTEMPTS: "3"
+  RETRY_BASE_DELAY: "1.0"
+  RETRY_MAX_DELAY: "30.0"
+  CIRCUIT_BREAKER_THRESHOLD: "5"
+  CIRCUIT_BREAKER_TIMEOUT: "60.0"
+
+jobs:
+  manage-kaggle-machine:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        machine: [kaggle_1, kaggle_2, kaggle_3, kaggle_4, kaggle_5, kaggle_6]
+      fail-fast: false
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set secrets as environment
+        run: |
+          echo "HF_TOKEN=${{ secrets.HF_TOKEN }}" >> $GITHUB_ENV
+          echo "HF_DATASET=${{ env.HF_DATASET }}" >> $GITHUB_ENV
+          echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
+
+      - name: Set Kaggle credentials index
+        id: credentials
+        run: |
+          machine_index="${{ matrix.machine }}"
+          machine_index="${machine_index//kaggle_/}"
+          echo "machine_index=${machine_index}" >> $GITHUB_OUTPUT
+
+      - name: Read current state
+        id: read-state
+        run: |
+          python3 << 'EOF'
+          import json, sys, os
+          try:
+              from huggingface_hub import HfApi
+              hf_token = os.environ.get('HF_TOKEN', '')
+              api = HfApi(token=hf_token)
+              import huggingface_hub
+              path = huggingface_hub.hf_hub_download(
+                  repo_id=os.environ.get('HF_DATASET', 'TwiZzy841/platforme-osint'),
+                  filename='${{ matrix.machine }}_state.json',
+                  repo_type='dataset',
+                  token=hf_token,
+              )
+              with open(path, 'r') as f:
+                  state = json.load(f)
+              print(json.dumps(state))
+          except Exception as e:
+              print(f'ERROR: {e}', file=sys.stderr)
+              print('{}')
+          EOF
+          echo '{}' > "${{ matrix.machine }}_state.json"
+
+      - name: Determine machine status
+        id: status-result
+        run: |
+          python3 << 'EOF'
+          import json, sys, time, os
+
+          try:
+              with open('${{ matrix.machine }}_state.json', 'r') as f:
+                  state = json.load(f)
+          except:
+              state = {}
+
+          status = state.get('status', 'idle')
+          machine_id = state.get('machine_id', '')
+          session_expires = state.get('session_expires', 0)
+          handoff_ready = state.get('handoff_ready', False)
+          next_leader = state.get('next_leader', '')
+          heartbeat = state.get('heartbeat', 0)
+
+          now = time.time()
+          time_since_heartbeat = now - heartbeat if heartbeat else 999999
+          duration_hours = float(os.environ.get('SESSION_DURATION_HOURS', '4.5'))
+
+          needs_new_leader = False
+          if status == 'running' and time_since_heartbeat > 3600 * duration_hours:
+              needs_new_leader = True
+          elif status == 'handoff' and handoff_ready and next_leader:
+              needs_new_leader = True
+          elif status == 'idle' and handoff_ready:
+              needs_new_leader = True
+
+          # Write outputs to GitHub Actions
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as gh_out:
+              gh_out.write(f"needs_new_leader={needs_new_leader}\n")
+              gh_out.write(f"current_status={status}\n")
+              gh_out.write(f"current_machine={machine_id}\n")
+
+          print(f'needs_new_leader={needs_new_leader}')
+          print(f'current_status={status}')
+          print(f'current_machine={machine_id}')
+          print(f'time_since_heartbeat={time_since_heartbeat:.0f}')
+          EOF
+
+      - name: Update state - assign new leader
+        if: steps.status-result.outputs.needs_new_leader == 'True'
+        run: |
+          python3 << 'EOF'
+          import json, sys, time, os
+
+          try:
+              with open('${{ matrix.machine }}_state.json', 'r') as f:
+                  state = json.load(f)
+          except:
+              state = {}
+
+          duration_hours = float(os.environ.get('SESSION_DURATION_HOURS', '4.5'))
+
+          state['status'] = 'running'
+          state['machine_id'] = '${{ matrix.machine }}'
+          state['session_start'] = time.time()
+          state['session_expires'] = state['session_start'] + duration_hours * 3600
+          state['handoff_ready'] = False
+          state['next_leader'] = ''
+          state['last_save'] = time.time()
+          state['heartbeat'] = time.time()
+
+          with open('${{ matrix.machine }}_state.json', 'w') as f:
+              json.dump(state, f, indent=2)
+
+          print('State updated for ${{ matrix.machine }}')
+          EOF
+
+      - name: Trigger Kaggle session
+        if: steps.status-result.outputs.needs_new_leader == 'True'
+        run: |
+          echo "Triggering Kaggle session for ${{ matrix.machine }}"
+          echo "Machine: ${{ matrix.machine }}"
+          echo "Status: ${{ steps.status-result.outputs.current_status }}"
+          echo "Session duration: ${{ env.SESSION_DURATION_HOURS }}h"
+          echo "Model: ${{ env.MODEL_PATH }}"
+
+          # Configure Kaggle API - use hardcoded credentials
+          INDEX="${{ steps.credentials.outputs.machine_index }}"
+          case "$INDEX" in
+            1) USER="KGAT_42542b97509a0a764a9f93dea96b8420"; KEY="poiuyhgfdfghjuijhgf" ;;
+            2) USER="vckhgb"; KEY="KGAT_9b192c6dac7c8dcc04ae0fd94fc39c2f" ;;
+            3) USER="dhsers"; KEY="KGAT_db47b21b2372859d0cc31bf2589a5ce4" ;;
+            4) USER="ebeedhdhdh"; KEY="KGAT_2d165201b9c1172f8ea76ca1554d0003" ;;
+            5) USER="udhhebjhd"; KEY="KGAT_255e92babfae804625864f221ad799f7" ;;
+            6) USER="bjhjhjhjjhvtrtyuik"; KEY="KGAT_3d3fa42ca125b89a418be2e8091aab8e" ;;
+          esac
+
+          mkdir -p ~/.kaggle
+          echo "{\"username\":\"$USER\",\"key\":\"$KEY\"}" > ~/.kaggle/kaggle.json
+          chmod 600 ~/.kaggle/kaggle.json
+
+          echo "Kaggle credentials configured for ${{ matrix.machine }}"
+
+      - name: Monitor Kaggle machine
+        run: |
+          python3 << 'EOF'
+          import json, time, os
+
+          try:
+              with open('${{ matrix.machine }}_state.json', 'r') as f:
+                  state = json.load(f)
+          except:
+              state = {}
+
+          heartbeat = state.get('heartbeat', 0)
+          now = time.time()
+          age_hours = (now - heartbeat) / 3600 if heartbeat else 999999
+          duration_hours = float(os.environ.get('SESSION_DURATION_HOURS', '4.5'))
+
+          status = state.get('status', 'unknown')
+          machine_id = state.get('machine_id', 'unknown')
+
+          print(f'Monitoring {machine_id}: status={status}, age={age_hours:.1f}h')
+
+          if age_hours > duration_hours:
+              print(f'WARNING: Session expired for {machine_id}')
+          elif age_hours > duration_hours * 0.8:
+              print(f'WARNING: Session approaching expiry for {machine_id}')
+          else:
+              print(f'OK: {machine_id} is healthy')
+          EOF
+
+      - name: Save state to HuggingFace
+        run: |
+          python3 << 'EOF'
+          import json, sys, os
+          try:
+              from huggingface_hub import HfApi
+              hf_token = os.environ.get('HF_TOKEN', '')
+              api = HfApi(token=hf_token)
+              api.upload_file(
+                  path_or_fileobj='${{ matrix.machine }}_state.json',
+                  path_in_repo='${{ matrix.machine }}_state.json',
+                  repo_id=os.environ.get('HF_DATASET', 'TwiZzy841/platforme-osint'),
+                  repo_type='dataset',
+                  token=hf_token,
+              )
+              print('State saved to HuggingFace Dataset')
+          except Exception as e:
+              print(f'Error saving state: {e}', file=sys.stderr)
+          EOF
+        continue-on-error: true
+
+      - name: Cleanup stale session
+        if: github.event_name == 'schedule'
+        run: |
+          python3 << 'EOF'
+          import json, time, os
+
+          try:
+              from huggingface_hub import HfApi
+              hf_token = os.environ.get('HF_TOKEN', '')
+              api = HfApi(token=hf_token)
+              import huggingface_hub
+              path = huggingface_hub.hf_hub_download(
+                  repo_id=os.environ.get('HF_DATASET', 'TwiZzy841/platforme-osint'),
+                  filename='${{ matrix.machine }}_state.json',
+                  repo_type='dataset',
+                  token=hf_token,
+              )
+              with open(path, 'r') as f:
+                  state = json.load(f)
+
+              heartbeat = state.get('heartbeat', 0)
+              age_hours = (time.time() - heartbeat) / 3600
+
+              if age_hours > 24:
+                  state['status'] = 'stale'
+                  state['machine_id'] = ''
+                  with open(path, 'w') as f:
+                      json.dump(state, f, indent=2)
+                  print(f'Cleaned up stale session for ${{ matrix.machine }} (age: {age_hours:.1f}h)')
+              else:
+                  print(f'Session for ${{ matrix.machine }} is fresh (age: {age_hours:.1f}h)')
+          except Exception as e:
+              print(f'Error during cleanup: {e}')
+          EOF
+        continue-on-error: true

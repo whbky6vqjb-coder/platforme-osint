@@ -1,0 +1,30 @@
+retry:
+  max_attempts: 3
+  base_delay_seconds: 1.0
+  max_delay_seconds: 30.0
+  backoff_multiplier: 2.0
+  jitter: true
+
+circuit_breaker:
+  failure_threshold: 5
+  recovery_timeout_seconds: 60.0
+  half_open_max_requests: 1
+
+endpoint:
+  type: ngrok
+  auth_token: your_ngrok_auth_token_here
+  endpoint: your_ngrok_endpoint_here
+  health_check_interval_seconds: 30
+  timeout_seconds: 120
+
+handoff:
+  warning_minutes: 30
+  save_interval_minutes: 15
+  transition_timeout_seconds: 120
+  state_file: state.json
+
+persistence:
+  hf_dataset: TwiZzy841/platforme-osint
+  save_on_shutdown: true
+  save_on_handoff: true
+  save_interval_minutes: 15
