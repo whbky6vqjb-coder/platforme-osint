@@ -2,7 +2,7 @@ name: Kaggle Session Coordination
 
 on:
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "0 */5 * * *"
   workflow_dispatch:
   push:
     branches: [main]
@@ -37,10 +37,18 @@ jobs:
 
       - name: Install SOPS and Age
         run: |
-          curl -sL https://github.com/getsops/sops/releases/download/v3.8.1/sops_3.8.1_amd64.deb -o /tmp/sops.deb
-          sudo dpkg -i /tmp/sops.deb || sudo apt-get install -f -y
+          sudo apt-get update
+          sudo apt-get install -y sops
           curl -sL https://github.com/FiloSottile/age/releases/download/v1.1.1/age-v1.1.1-linux-amd64.tar.gz -o /tmp/age.tar.gz
-          tar xzf /tmp/age.tar.gz -C /usr/local/bin/ age age-keygen
+          mkdir -p /tmp/age-install && tar xzf /tmp/age.tar.gz -C /tmp/age-install
+          cp /tmp/age-install/age/age /usr/local/bin/
+          cp /tmp/age-install/age/age-keygen /usr/local/bin/
+          chmod +x /usr/local/bin/age /usr/local/bin/age-keygen
+
+      - name: Install Python dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install pyyaml huggingface_hub kaggle
 
       - name: Decrypt secrets
         run: |
@@ -55,14 +63,12 @@ jobs:
                   env.write(f'{key}={value}\n')
           "
 
-      - name: Set Kaggle credentials for this machine
+      - name: Set Kaggle credentials index
         id: credentials
         run: |
           machine_index="${{ matrix.machine }}"
           machine_index="${machine_index//kaggle_/}"
           echo "machine_index=${machine_index}" >> $GITHUB_OUTPUT
-          eval echo "username=\$KAGGLE_USERNAME_${machine_index}" >> $GITHUB_OUTPUT
-          echo "key_set=true" >> $GITHUB_OUTPUT
 
       - name: Read current state
         id: read-state
@@ -90,9 +96,9 @@ jobs:
         continue-on-error: true
 
       - name: Determine machine status
-        id: status-check
+        id: status-result
         run: |
-          python3 -c "
+          python3 << 'EOF'
           import json, sys, time, os
 
           try:
@@ -120,17 +126,22 @@ jobs:
           elif status == 'idle' and handoff_ready:
               needs_new_leader = True
 
+          # Write outputs to GitHub Actions
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as gh_out:
+              gh_out.write(f"needs_new_leader={needs_new_leader}\n")
+              gh_out.write(f"current_status={status}\n")
+              gh_out.write(f"current_machine={machine_id}\n")
+
           print(f'needs_new_leader={needs_new_leader}')
           print(f'current_status={status}')
           print(f'current_machine={machine_id}')
           print(f'time_since_heartbeat={time_since_heartbeat:.0f}')
-          "
-        id: status-result
+          EOF
 
       - name: Update state - assign new leader
         if: steps.status-result.outputs.needs_new_leader == 'True'
         run: |
-          python3 -c "
+          python3 << 'EOF'
           import json, sys, time, os
 
           try:
@@ -166,7 +177,7 @@ jobs:
               json.dump(state, f, indent=2)
 
           print('State updated for ${{ matrix.machine }}')
-          "
+          EOF
 
       - name: Trigger Kaggle session
         if: steps.status-result.outputs.needs_new_leader == 'True'
@@ -177,9 +188,19 @@ jobs:
           echo "Session duration: ${{ env.SESSION_DURATION_HOURS }}h"
           echo "Model: ${{ env.MODEL_PATH }}"
 
+          # Configure Kaggle API
+          mkdir -p ~/.kaggle
+          INDEX="${{ steps.credentials.outputs.machine_index }}"
+          eval "USER=\$KAGGLE_USERNAME_${INDEX}"
+          eval "KEY=\$KAGGLE_KEY_${INDEX}"
+          echo "{\"username\":\"$USER\",\"key\":\"$KEY\"}" > ~/.kaggle/kaggle.json
+          chmod 600 ~/.kaggle/kaggle.json
+
+          echo "Kaggle credentials configured for ${{ matrix.machine }}"
+
       - name: Monitor Kaggle machine
         run: |
-          python3 -c "
+          python3 << 'EOF'
           import json, time, os
 
           try:
@@ -204,11 +225,11 @@ jobs:
               print(f'WARNING: Session approaching expiry for {machine_id}')
           else:
               print(f'OK: {machine_id} is healthy')
-          "
+          EOF
 
       - name: Save state to HuggingFace
         run: |
-          python3 -c "
+          python3 << 'EOF'
           import json, sys, os
           try:
               from huggingface_hub import HfApi
@@ -224,13 +245,13 @@ jobs:
               print('State saved to HuggingFace Dataset')
           except Exception as e:
               print(f'Error saving state: {e}', file=sys.stderr)
-          "
+          EOF
         continue-on-error: true
 
       - name: Cleanup stale session
         if: github.event_name == 'schedule'
         run: |
-          python3 -c "
+          python3 << 'EOF'
           import json, time, os
 
           try:
@@ -260,5 +281,5 @@ jobs:
                   print(f'Session for ${{ matrix.machine }} is fresh (age: {age_hours:.1f}h)')
           except Exception as e:
               print(f'Error during cleanup: {e}')
-          "
+          EOF
         continue-on-error: true
